@@ -103,8 +103,37 @@ void dbg_print(POLY *p1, int line)
 // This function subtract polynomial p2 from p1 to form a new polynomial and return the new polynomial.
 POLY *sub(POLY *p1, POLY *p2)
 {
+    POLY np;
+    POLY *np_head = &np;
 
-    return NULL;
+    while (p1 && p2) {
+        if (p1->degree > p2->degree) {
+            np_head->next = oneTerm(p1->degree, p1->coef);
+            p1 = p1->next;
+        } else if (p1->degree < p2->degree) {
+            np_head->next = oneTerm(p2->degree, -p2->coef);
+            p2 = p2->next;
+        } else {
+            np_head->next = oneTerm(p1->degree,  p1->coef - p2->coef);
+            p1 = p1->next;
+            p2 = p2->next;
+        }
+        np_head = np_head->next;
+    }
+
+    while (p1) {
+        np_head->next = oneTerm(p1->degree, p1->coef);
+        p1 = p1->next;
+        np_head = np_head->next;
+    }
+
+    while (p2) {
+        np_head->next = oneTerm(p2->degree, -p2->coef);
+        p2 = p2->next;
+        np_head = np_head->next;
+    }
+
+    return np.next;
 }
 
 
@@ -202,7 +231,7 @@ void test_case1(void)
     print(A);
     printf("\n\n");
 
-    B = add(oneTerm(1, 1), oneTerm(0, -1));
+    B = sub(oneTerm(1, 1), oneTerm(0, 1));
     printf("B=");
     print(B);
     printf("\n\n");
@@ -278,7 +307,8 @@ printf("C5 = ");
 print(C5
 #endif
 
-    B = add(oneTerm(1, 1), oneTerm(0, -1));
+    /*B = add(oneTerm(1, 1), oneTerm(0, -1));*/
+    B = sub(oneTerm(1, 1), oneTerm(0, 1));
     B2 = mply(B, B);
     B3 = mply(B2, B);
     B4 = mply(B3, B);
