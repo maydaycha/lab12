@@ -42,7 +42,10 @@ POLY *oneTerm(int degree, double coef)
 }
 
 
-// This function releases all nodes of the polynomial p1 and returns them to the heap space.
+/*
+ * This function releases all nodes of the polynomial p1
+ * and returns them to the heap space.
+ */
 void release(POLY *p1)
 {
     POLY *tmp;
@@ -55,7 +58,10 @@ void release(POLY *p1)
 
 
 
-// This function adds two polynomials p1 and p2 to form a new polynomial and return the new polynomial
+/*
+ * This function adds two polynomials p1 and p2
+ * to form a new polynomial and return the new polynomial
+ */
 POLY *add(POLY *p1, POLY *p2)
 {
     POLY np;
@@ -100,7 +106,10 @@ void dbg_print(POLY *p1, int line)
 }
 
 
-// This function subtract polynomial p2 from p1 to form a new polynomial and return the new polynomial.
+/*
+ * This function subtract polynomial p2 from p1
+ * to form a new polynomial and return the new polynomial.
+ */
 POLY *sub(POLY *p1, POLY *p2)
 {
     POLY np;
@@ -137,7 +146,10 @@ POLY *sub(POLY *p1, POLY *p2)
 }
 
 
-// This function multiplies two polynomials p1 and p2 to form a new polynomial and return the new polynomial.
+/*
+ * This function multiplies two polynomials p1 and p2
+ * to form a new polynomial and return the new polynomial.
+ */
 POLY *mply(POLY *p1, POLY *p2)
 {
     POLY *new_head, *tmp = p2, *n, *n2;
@@ -186,7 +198,11 @@ POLY *mply(POLY *p1, POLY *p2)
     return np.next;
 }
 
-// This function prints out the polynomial p1 in human readable form. See the example output given below for more details.
+
+/*
+ * This function prints out the polynomial p1 in human readable form.
+ * See the example output given below for more details.
+ */
 void print(POLY *p1)
 {
     int first = 1;
