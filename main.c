@@ -286,11 +286,6 @@ void test_case2(void)
     B4 = mply(B3, B);
     B5 = mply(B4, B);
 
-    printf("A2 = ");
-    print(A2);
-    printf("B2 = ");
-    print(B2);
-
     C = add(A, B);
     C2 = mply(A2, B2);
     C3 = mply(A3, B3);
@@ -305,12 +300,6 @@ void test_case2(void)
     print(C3);
     printf("C4 = ");
     print(C4);
-
-    printf("A5 = ");
-    print(A5);
-    printf("B5 = ");
-    print(B5);
-
     printf("C5 = ");
     print(C5);
 
