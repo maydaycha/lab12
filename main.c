@@ -111,39 +111,76 @@ POLY *sub(POLY *p1, POLY *p2)
 // This function multiplies two polynomials p1 and p2 to form a new polynomial and return the new polynomial.
 POLY *mply(POLY *p1, POLY *p2)
 {
-    POLY *new_head;
+    POLY *new_head, *tmp = p2, *n, *n2;
+    POLY np;
+    np.coef = 0;
+    np.degree = 0;
 
-    new_head = p1;
+    new_head = &np;
 
-    while (p1) {
-        new_head->next;
+    for (p1; p1; p1 = p1->next) {
+        for (p2 = tmp; p2; p2 = p2->next) {
+            new_head->next = oneTerm(p1->degree + p2->degree, p1->coef * p2->coef);
+            new_head = new_head->next;
+        }
     }
 
+    for (n = np.next; n; n = n->next) {
+        for (n2 = n->next; n2; n2 = n2->next) {
+            if (n->degree == n2->degree) {
+                n->coef += n2->coef;
+                // FIXME: should release term, not just set coef = zero;
+                n2->coef = 0;
+            }
+        }
+    }
+
+    // remove term with coef "0"
+    for (n = np.next; n; n = n->next) {
+        POLY *to_remove;
+
+        if (n->next && n->next->coef == 0) {
+            if (n->next->next) {
+                to_remove = n->next;
+                n->next = n->next->next;
+                to_remove->next = NULL;
+                release(to_remove);
+            } else {
+                release(n->next);
+                n->next = NULL;
+            }
+        }
+    }
+
+    /*new_head = np.next;*/
+
+    return np.next;
 }
 
 // This function prints out the polynomial p1 in human readable form. See the example output given below for more details.
 void print(POLY *p1)
 {
+    int first = 1;
 
-    while (p1) {
-         //printf("enter..\n");
-        if (p1->coef > 0) {
-            printf("+%f", p1->coef);
+    for (p1; p1; p1 = p1->next) {
+        /*if (p1->coef == 0)*/
+            /*continue;*/
+
+        if (p1->coef > 0 && !first) {
+            printf("+%g", p1->coef);
         } else if (p1->coef < 0) {
-            printf("%f", p1->coef);
+            printf("%g", p1->coef);
         }
 
         if (p1->degree) {
             printf("x");
             if (p1->degree > 1)
-                printf("^%d",p1->degree );
+                printf("^%d",p1->degree);
         }
 
-        p1 = p1->next;
-
+        first = 0;
     }
     printf("\n\n");
-
 }
 
 
@@ -174,7 +211,7 @@ int main()
     print(C);
     printf("\n\n");
 
-    A2 = add(A, A);
+    A2 = mply(A, A);
     printf("A2=");
     print(A2);
     printf("\n\n");
