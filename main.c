@@ -65,13 +65,13 @@ POLY *add(POLY *p1, POLY *p2)
     POLY *np_head = &np;
 
     while (p1 && p2) {
-        if (p1->degree > p2->degree) {
+        if (p1->degree > p2->degree) {  // if degrees are not equal, use the bigger one.
             np_head->next = oneTerm(p1->degree, p1->coef);
             p1 = p1->next;
-        } else if (p1->degree < p2->degree) {
+        } else if (p1->degree < p2->degree) {   // if degrees are not equal, use the bigger one.
             np_head->next = oneTerm(p2->degree, p2->coef);
             p2 = p2->next;
-        } else {
+        } else {  // degrees are same, creat term with new coef.
             np_head->next = oneTerm(p1->degree,  p1->coef + p2->coef);
             p1 = p1->next;
             p2 = p2->next;
@@ -79,12 +79,14 @@ POLY *add(POLY *p1, POLY *p2)
         np_head = np_head->next;
     }
 
+    /* no more term in p2 list, so just create terms with the value of term of p1 */
     while (p1) {
         np_head->next = oneTerm(p1->degree, p1->coef);
         p1 = p1->next;
         np_head = np_head->next;
     }
 
+    /* no more term in p1 list, so just create terms with the value of term of p2 */
     while (p2) {
         np_head->next = oneTerm(p2->degree, p2->coef);
         p2 = p2->next;
@@ -100,6 +102,7 @@ POLY *add(POLY *p1, POLY *p2)
  * This function subtract polynomial p2 from p1
  * to form a new polynomial and return the new polynomial.
  */
+// the flow of "sub" is almost as same as "add"
 POLY *sub(POLY *p1, POLY *p2)
 {
     POLY np;
@@ -110,7 +113,7 @@ POLY *sub(POLY *p1, POLY *p2)
             np_head->next = oneTerm(p1->degree, p1->coef);
             p1 = p1->next;
         } else if (p1->degree < p2->degree) {
-            np_head->next = oneTerm(p2->degree, -p2->coef);
+            np_head->next = oneTerm(p2->degree, -p2->coef); // this is "sub" case, so inverse the coef.
             p2 = p2->next;
         } else {
             np_head->next = oneTerm(p1->degree,  p1->coef - p2->coef);
@@ -127,7 +130,7 @@ POLY *sub(POLY *p1, POLY *p2)
     }
 
     while (p2) {
-        np_head->next = oneTerm(p2->degree, -p2->coef);
+        np_head->next = oneTerm(p2->degree, -p2->coef);  // this is "sub" case, so inverse the coef.
         p2 = p2->next;
         np_head = np_head->next;
     }
@@ -181,7 +184,7 @@ POLY *mply(POLY *p1, POLY *p2)
                 release(to_remove);      // we don't need this term anymore, reclaim memory to heap.
                 continue;  // do not move to next here, becuase we need to check the coef of current "next" is zero or not.
             } else {
-                release(np_head->next);
+                release(np_head->next);  // this term is the last one in the this, so just release it.
                 np_head->next = NULL;
             }
         }
@@ -201,22 +204,18 @@ void print(POLY *p1)
     int first = 1;
 
     for (; p1; p1 = p1->next) {
-
-        if (first && p1->coef == 1) {
-                // nothing;
-        } else if (p1->coef > 0) {
-            if (!first)
-                printf("+%g", p1->coef);
-            else
-                printf("%g", p1->coef);
-        } else if (p1->coef < 0) {
+        if (first && p1->coef == 1) {  // first term and coef == 1, we should ignroe printing the coef.
+            // nothing;
+        } else if (p1->coef > 0 && !first) {
+            printf("+%g", p1->coef);  // print "+" only if it is not first term.
+        } else {
             printf("%g", p1->coef);
         }
 
         if (p1->degree) {
             printf("x");
             if (p1->degree > 1)
-                printf("^%d",p1->degree);
+                printf("^%d", p1->degree);
         }
 
         first = 0;
