@@ -17,9 +17,6 @@ typedef struct sPoly {
 } POLY;
 
 
-void dbg_print(POLY *p1, int line);
-void print(POLY *p1);
-
 /*
  * This function creates a 1-term polynomial of the form coef * x^degree
  * and returns the new polynomial
@@ -99,13 +96,6 @@ POLY *add(POLY *p1, POLY *p2)
 
 
 
-void dbg_print(POLY *p1, int line)
-{
-    if (p1)
-        printf("%d:  %f x^%d\n", line, p1->coef, p1->degree);
-}
-
-
 /*
  * This function subtract polynomial p2 from p1
  * to form a new polynomial and return the new polynomial.
@@ -152,47 +142,50 @@ POLY *sub(POLY *p1, POLY *p2)
  */
 POLY *mply(POLY *p1, POLY *p2)
 {
-    POLY *new_head, *tmp = p2, *n, *n2;
-    POLY np;
+    POLY *np_head, *term;
+    POLY np; // this is just as "HEAD" of new polynomial
+
     np.coef = 0;
     np.degree = 0;
+    np.next = NULL;
+    np_head = &np;
 
-    new_head = &np;
-
+    // create Term for each (a x b)
     for (; p1; p1 = p1->next) {
-        for (p2 = tmp; p2; p2 = p2->next) {
-            new_head->next = oneTerm(p1->degree + p2->degree, p1->coef * p2->coef);
-            new_head = new_head->next;
+        for (term = p2; term; term = term->next) {
+            np_head->next = oneTerm(p1->degree + term->degree, p1->coef * term->coef);
+            np_head = np_head->next;
         }
     }
 
-    for (n = np.next; n; n = n->next) {
-        for (n2 = n->next; n2; n2 = n2->next) {
-            if (n->degree == n2->degree) {
-                n->coef += n2->coef;
-                // FIXME: should release term, not just set coef = zero;
-                n2->coef = 0;
+    // merge term with same degree, and mark being merged term with coef "zero" which will be removed later.
+    for (np_head = np.next; np_head; np_head = np_head->next) {
+        for (term = np_head->next; term; term = term->next) {
+            if (np_head->degree == term->degree) {
+                np_head->coef += term->coef;
+                term->coef = 0;
             }
         }
     }
 
-    // remove term with coef "0"
-    n = np.next;
-    while (n) {
+    // remove term with coef "zero" in the list that will be returned finally.
+    np_head = np.next;
+    while (np_head) {
         POLY *to_remove;
-        if (n->next && n->next->coef == 0) {
-            if (n->next->next) {
-                to_remove = n->next;
-                n->next = n->next->next;
-                to_remove->next = NULL;
-                release(to_remove);
+
+        if (np_head->next && np_head->next->coef == 0) {
+            if (np_head->next->next) {
+                to_remove = np_head->next;
+                np_head->next = np_head->next->next;
+                to_remove->next = NULL;  // prevent from releasing more terms.
+                release(to_remove);      // we don't need this term anymore, reclaim memory to heap.
                 continue;  // do not move to next here, becuase we need to check the coef of current "next" is zero or not.
             } else {
-                release(n->next);
-                n->next = NULL;
+                release(np_head->next);
+                np_head->next = NULL;
             }
         }
-        n = n->next;
+        np_head = np_head->next;
     }
 
     return np.next;
@@ -208,8 +201,6 @@ void print(POLY *p1)
     int first = 1;
 
     for (; p1; p1 = p1->next) {
-        /*if (p1->coef == 0)*/
-            /*continue;*/
 
         if (first && p1->coef == 1) {
                 // nothing;
@@ -220,9 +211,7 @@ void print(POLY *p1)
                 printf("%g", p1->coef);
         } else if (p1->coef < 0) {
             printf("%g", p1->coef);
-        } else// debug..
-            printf("**%g", p1->coef);
-
+        }
 
         if (p1->degree) {
             printf("x");
@@ -279,17 +268,7 @@ void test_case2(void)
     POLY *A, *A2, *A3, *A4, *A5;
     POLY *B, *B2, *B3, *B4, *B5;
     POLY *C, *C2, *C3, *C4, *C5;
-#if 0
-Polynomial A =X+One,
-Polynomial A2 = A x A,
-Polynomial A3 = A2 x A,
-Polynomial A4 = A3 x A,
-Polynomial A5 = A4 x A,
-printf("A = ");
-print(A),
-printf("A2 = ");
-print(A2),
-#endif
+
     A = add(oneTerm(1, 1), oneTerm(0, 1));
     A2 = mply(A, A);
     A3 = mply(A2, A);
@@ -300,28 +279,6 @@ print(A2),
     print(A);
     printf("A2 = ");
     print(A2);
-#if 0
-Polynomial B =X - One,
-Polynomial B2 = B x  B,
-Polynomial B3 = B2 x B,
-Polynomial B4 = B3 x B,
-Polynomial B5 = B4 x B,
-Polynomial C = A + B,
-Polynomial C2 = A2 x B2,
-Polynomial C3 = A3 x B3,
-Polynomial C4 = A4 x B4,
-Polynomial C5 = A5 x B5,
-printf("C = ");
-print(C),
-printf("C2 = ");
-print(C2),
-printf("C3 = ");
-print(C3),
-printf("C4 = ");
-print(C4),
-printf("C5 = ");
-print(C5
-#endif
 
     /*B = add(oneTerm(1, 1), oneTerm(0, -1));*/
     B = sub(oneTerm(1, 1), oneTerm(0, 1));
