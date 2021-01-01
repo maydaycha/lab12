@@ -46,11 +46,10 @@ POLY *oneTerm(int degree, double coef)
 void release(POLY *p1)
 {
     POLY *tmp;
-
-    tmp = p1;
-    while (tmp) {
+    while (p1) {
+        tmp = p1;
+        p1 = p1->next;
         free(tmp);
-        tmp = p1->next;
     }
 }
 
@@ -59,53 +58,37 @@ void release(POLY *p1)
 // This function adds two polynomials p1 and p2 to form a new polynomial and return the new polynomial
 POLY *add(POLY *p1, POLY *p2)
 {
-    POLY *new_head, *tmp;
+    POLY np;
+    POLY *np_head = &np;
 
-    if (!p1) {
-        dbg_print(p2, __LINE__);
-        return p2;
+    while (p1 && p2) {
+        if (p1->degree > p2->degree) {
+            np_head->next = oneTerm(p1->degree, p1->coef);
+            p1 = p1->next;
+        } else if (p1->degree < p2->degree) {
+            np_head->next = oneTerm(p2->degree, p2->coef);
+            p2 = p2->next;
+        } else {
+            np_head->next = oneTerm(p1->degree,  p1->coef + p2->coef);
+            p1 = p1->next;
+            p2 = p2->next;
+        }
+        np_head = np_head->next;
     }
-    else if (!p2) {
-        dbg_print(p1, __LINE__);
-        return p1;
+
+    while (p1) {
+        np_head->next = oneTerm(p1->degree, p1->coef);
+        p1 = p1->next;
+        np_head = np_head->next;
     }
 
-
-    if (p1->degree > p2->degree) {
-        dbg_print(p1, __LINE__);
-        dbg_print(p2, __LINE__);
-        new_head = p1;
-        new_head->next = add(p1->next, p2);
-
-        print(new_head);
-    } else if (p1->degree < p2->degree) {
-        dbg_print(p1, __LINE__);
-        dbg_print(p2, __LINE__);
-        new_head = p2;
-        new_head->next = add(p1, p2->next);
-
-        print(new_head);
-    } else {
-#if 1
-        dbg_print(p1, __LINE__);
-        dbg_print(p2, __LINE__);
-        new_head = p1;
-        new_head->coef += p2->coef;
-        tmp = p2->next;
-        if (p1 != p2)
-            free(p2);
-        new_head->next = add(new_head->next, tmp);
-#else
-        dbg_print(p1, __LINE__);
-        dbg_print(p2, __LINE__);
-        new_head = oneTerm(p1->degree, p1->coef + p2->coef);
-        new_head->next = add(p1->next, p2->next);
-        free(p1);
-        free(p2);
-#endif
-        print(new_head);
+    while (p2) {
+        np_head->next = oneTerm(p2->degree, p2->coef);
+        p2 = p2->next;
+        np_head = np_head->next;
     }
-    return new_head;
+
+    return np.next;
 }
 
 
@@ -173,34 +156,38 @@ int main()
     printf("Hello World\n");
 
     A = add(oneTerm(1, 1), oneTerm(0, 1));
-    //printf("%p\n", A);
     if (A) {
         printf("A=");
         print(A);
         printf("\n\n");
-      //  release(A);
     }
 
-#if 0
     B = add(oneTerm(1, 1), oneTerm(0, -1));
     if (B) {
         printf("B=");
         print(B);
         printf("\n\n");
-      //  release(B);
     }
 
     C = add(A, B);
     printf("C=");
     print(C);
     printf("\n\n");
-#endif
 
     A2 = add(A, A);
     printf("A2=");
     print(A2);
     printf("\n\n");
 
+    printf("A=");
+    print(A);
+    printf("\n\n");
+
+
+    release(A);
+    release(B);
+    release(C);
+    release(A2);
 
     return 0;
 }
