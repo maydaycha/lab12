@@ -276,12 +276,18 @@ void print(POLY *p1)
         if (first && p1->coef == 1) {  // first term and coef == 1, we should ignroe printing the coef.
             // nothing;
         } else if (p1->coef > 0 && !first) {
+            if (!first)
+                printf(" ");
             printf("+%g", p1->coef);  // print "+" only if it is not first term.
         } else {
+            if (!first)
+                printf(" ");
             printf("%g", p1->coef);
         }
 
         if (p1->degree) {
+            if (p1->coef != 1)
+                printf(" ");
             printf("x");
             if (p1->degree > 1)
                 printf("^%d", p1->degree);
@@ -289,5 +295,5 @@ void print(POLY *p1)
 
         first = 0;
     }
-    printf("\n\n");
+    printf("\n");
 }
