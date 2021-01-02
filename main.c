@@ -251,13 +251,15 @@ POLY *mply(POLY *p1, POLY *p2)
                 np_head->next = np_head->next->next;
                 to_remove->next = NULL;  // prevent from releasing more terms.
                 release(to_remove);      // we don't need this term anymore, reclaim memory to heap.
-                continue;  // do not move to next here, becuase we need to check the coef of current "next" is zero or not.
+                // do not move to next here, because we need to check the coef of current "next" is zero or not.
             } else {
                 release(np_head->next);  // this term is the last one in the this, so just release it.
                 np_head->next = NULL;
+                np_head = np_head->next;
             }
+        } else {
+            np_head = np_head->next;
         }
-        np_head = np_head->next;
     }
 
     return np.next;
