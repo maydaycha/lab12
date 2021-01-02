@@ -16,6 +16,75 @@ typedef struct sPoly {
     struct sPoly *next; // pointer to the next node
 } POLY;
 
+POLY *oneTerm(int degree, double coef);
+void release(POLY *p1);
+POLY *add(POLY *p1, POLY *p2);
+POLY *sub(POLY *p1, POLY *p2);
+POLY *mply(POLY *p1, POLY *p2);
+void print(POLY *p1);
+
+
+int main()
+{
+    POLY *A, *A2, *A3, *A4, *A5;
+    POLY *B, *B2, *B3, *B4, *B5;
+    POLY *C, *C2, *C3, *C4, *C5;
+
+    A = add(oneTerm(1, 1), oneTerm(0, 1));
+    A2 = mply(A, A);
+    A3 = mply(A2, A);
+    A4 = mply(A3, A);
+    A5 = mply(A4, A);
+
+    printf("A = ");
+    print(A);
+    printf("A2 = ");
+    print(A2);
+
+    /*B = add(oneTerm(1, 1), oneTerm(0, -1));*/
+    B = sub(oneTerm(1, 1), oneTerm(0, 1));
+    B2 = mply(B, B);
+    B3 = mply(B2, B);
+    B4 = mply(B3, B);
+    B5 = mply(B4, B);
+
+    C = add(A, B);
+    C2 = mply(A2, B2);
+    C3 = mply(A3, B3);
+    C4 = mply(A4, B4);
+    C5 = mply(A5, B5);
+
+    printf("C = ");
+    print(C);
+    printf("C2 = ");
+    print(C2);
+    printf("C3 = ");
+    print(C3);
+    printf("C4 = ");
+    print(C4);
+    printf("C5 = ");
+    print(C5);
+
+    release(A);
+    release(A2);
+    release(A3);
+    release(A4);
+    release(A5);
+    release(B);
+    release(B2);
+    release(B3);
+    release(B4);
+    release(B5);
+    release(C);
+    release(C2);
+    release(C3);
+    release(C4);
+    release(C5);
+
+    return 0;
+}
+
+
 
 /*
  * This function creates a 1-term polynomial of the form coef * x^degree
@@ -221,132 +290,4 @@ void print(POLY *p1)
         first = 0;
     }
     printf("\n\n");
-}
-
-
-void test_case1(void)
-{
-    POLY *A, *B, *C, *A2;
-
-    printf("Hello World\n");
-
-    A = add(oneTerm(1, 1), oneTerm(0, 1));
-    printf("A=");
-    print(A);
-    printf("\n\n");
-
-    B = sub(oneTerm(1, 1), oneTerm(0, 1));
-    printf("B=");
-    print(B);
-    printf("\n\n");
-
-    C = add(A, B);
-    printf("C=");
-    print(C);
-    printf("\n\n");
-
-    A2 = mply(A, A);
-    printf("A2=");
-    print(A2);
-    printf("\n\n");
-
-    printf("A=");
-    print(A);
-    printf("\n\n");
-
-
-    release(A);
-    release(B);
-    release(C);
-    release(A2);
-}
-
-
-void test_case2(void)
-{
-    POLY *A, *A2, *A3, *A4, *A5;
-    POLY *B, *B2, *B3, *B4, *B5;
-    POLY *C, *C2, *C3, *C4, *C5;
-
-    A = add(oneTerm(1, 1), oneTerm(0, 1));
-    A2 = mply(A, A);
-    A3 = mply(A2, A);
-    A4 = mply(A3, A);
-    A5 = mply(A4, A);
-
-    printf("A = ");
-    print(A);
-    printf("A2 = ");
-    print(A2);
-
-    /*B = add(oneTerm(1, 1), oneTerm(0, -1));*/
-    B = sub(oneTerm(1, 1), oneTerm(0, 1));
-    B2 = mply(B, B);
-    B3 = mply(B2, B);
-    B4 = mply(B3, B);
-    B5 = mply(B4, B);
-
-    C = add(A, B);
-    C2 = mply(A2, B2);
-    C3 = mply(A3, B3);
-    C4 = mply(A4, B4);
-    C5 = mply(A5, B5);
-
-    printf("C = ");
-    print(C);
-    printf("C2 = ");
-    print(C2);
-    printf("C3 = ");
-    print(C3);
-    printf("C4 = ");
-    print(C4);
-    printf("C5 = ");
-    print(C5);
-
-    release(A);
-    release(A2);
-    release(A3);
-    release(A4);
-    release(A5);
-    release(B);
-    release(B2);
-    release(B3);
-    release(B4);
-    release(B5);
-    release(C);
-    release(C2);
-    release(C3);
-    release(C4);
-    release(C5);
-
-}
-
-
-void test_case3(void)
-{
-    POLY *A, *B, *C;
-
-    A = add(oneTerm(1, 1), oneTerm(0, 1));
-    B = add(oneTerm(1, 1), oneTerm(0, -1));
-
-    printf("A = ");
-    print(A);
-    printf("B = ");
-    print(B);
-
-    C = add(A, B);
-    printf("C = ");
-    print(C);
-
-    printf("%d: C:(%p)\n", __LINE__, C);
-}
-
-
-int main()
-{
-    /*test_case1();*/
-    test_case2();
-    /*test_case3();*/
-
-    return 0;
 }
